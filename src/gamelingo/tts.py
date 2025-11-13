@@ -21,7 +21,7 @@ class TTSEngine:
         """
         self.language = language
         self.is_speaking = False
-        self.temp_dir = Path(tempfile.gettempdir()) / "screentranslate_tts"
+        self.temp_dir = Path(tempfile.gettempdir()) / "gamelingo_tts"
         self.temp_dir.mkdir(exist_ok=True)
         self._available = True
         self._stop_requested = False

@@ -95,7 +95,7 @@ class ConfigManager:
             config_path: Path to config file. If None, uses default location.
         """
         if config_path is None:
-            config_path = Path.home() / ".screentranslate" / "config.json"
+            config_path = Path.home() / ".gamelingo" / "config.json"
         
         self.config_path = config_path
         self.config = Config()

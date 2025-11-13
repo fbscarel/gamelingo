@@ -85,7 +85,7 @@ sudo pacman -S tesseract-data-ita  # Italian
 ### 3. Install Screen Translate
 
 ```bash
-cd screentranslate
+cd gamelingo
 uv sync
 ```
 
@@ -97,12 +97,12 @@ This will automatically create a virtual environment and install all dependencie
 
 ```bash
 # Using uv (recommended)
-uv run screentranslate
+uv run gamelingo
 
 # Or after activating the virtual environment
 source .venv/bin/activate  # Linux
 .venv\Scripts\activate     # Windows
-python -m screentranslate
+python -m gamelingo
 ```
 
 ## Operating Modes
@@ -111,7 +111,7 @@ python -m screentranslate
 
 Best for: Cutscenes, visual novels, streaming text
 
-1. **Launch the application**: Run `uv run screentranslate`
+1. **Launch the application**: Run `uv run gamelingo`
 
 2. **Select Mode**: Choose "continuous" from the Mode dropdown
 
@@ -138,7 +138,7 @@ Best for: Cutscenes, visual novels, streaming text
 
 Best for: Turn-based games, language learning, on-demand translation
 
-1. **Launch the application**: Run `uv run screentranslate`
+1. **Launch the application**: Run `uv run gamelingo`
 
 2. **Select Mode**: Choose "hotkey" from the Mode dropdown
 
@@ -257,7 +257,7 @@ For this two-line dialogue:
 
 ## Configuration
 
-Configuration is stored in `~/.screentranslate/config.json` (Linux) or `C:\Users\<username>\.screentranslate\config.json` (Windows).
+Configuration is stored in `~/.gamelingo/config.json` (Linux) or `C:\Users\<username>\.gamelingo\config.json` (Windows).
 
 You can manually edit this file to adjust advanced settings:
 
@@ -435,16 +435,16 @@ Note: For OCR, you need to install the corresponding Tesseract language pack.
 - Check that Python 3.14+ is installed: `python --version`
 - Reinstall dependencies: `uv sync --force`
 - Check for error messages in the console
-- Try running with verbose output: `python -m screentranslate`
+- Try running with verbose output: `python -m gamelingo`
 
 ## Development
 
 ### Project Structure
 
 ```
-screentranslate/
+gamelingo/
 ├── src/
-│   └── screentranslate/
+│   └── gamelingo/
 │       ├── __init__.py         # Package initialization
 │       ├── __main__.py         # Entry point
 │       ├── config.py           # Configuration management
@@ -467,9 +467,9 @@ screentranslate/
 ### Running from Source
 
 ```bash
-cd screentranslate
+cd gamelingo
 uv sync
-uv run screentranslate
+uv run gamelingo
 ```
 
 ## How It Works
