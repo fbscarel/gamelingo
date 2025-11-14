@@ -19,21 +19,27 @@ class GamepadManager:
         self,
         translate_callback: Callable,
         tts_callback: Callable,
+        translated_tts_callback: Callable,
         translate_button: int = 0,  # A button
-        tts_button: int = 1  # B button
+        tts_button: int = 1,  # B button
+        translated_tts_button: int = 2  # X button
     ):
         """Initialize gamepad manager.
 
         Args:
             translate_callback: Function to call when translate button is pressed.
             tts_callback: Function to call when TTS button is pressed.
+            translated_tts_callback: Function to call when translated TTS button is pressed.
             translate_button: Button index for translation (0=A/Cross, 1=B/Circle, etc)
             tts_button: Button index for TTS
+            translated_tts_button: Button index for translated TTS
         """
         self.translate_callback = translate_callback
         self.tts_callback = tts_callback
+        self.translated_tts_callback = translated_tts_callback
         self.translate_button = translate_button
         self.tts_button = tts_button
+        self.translated_tts_button = translated_tts_button
 
         self.running = False
         self.poll_thread: Optional[threading.Thread] = None
@@ -42,6 +48,7 @@ class GamepadManager:
         # Track button states to prevent repeats
         self.last_translate_time = 0
         self.last_tts_time = 0
+        self.last_translated_tts_time = 0
         self.debounce_time = 0.3  # 300ms debounce
 
         if PYGAME_AVAILABLE:
@@ -146,6 +153,12 @@ class GamepadManager:
                                 self.last_tts_time = current_time
                                 print(f"🎮 TTS triggered by button {i}")
                                 self.tts_callback()
+
+                        elif i == self.translated_tts_button:
+                            if current_time - self.last_translated_tts_time > self.debounce_time:
+                                self.last_translated_tts_time = current_time
+                                print(f"🎮 Translated TTS triggered by button {i}")
+                                self.translated_tts_callback()
 
                 # Poll at 60Hz
                 time.sleep(1/60)

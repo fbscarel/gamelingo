@@ -144,6 +144,7 @@ class MainGUI:
         # Hotkey state
         self.hotkey_manager: Optional[HotkeyManager] = None
         self.last_ocr_text: str = ""  # Store last OCR'd text for TTS
+        self.last_translated_text: str = ""  # Store last translated text for TTS
         
         # Create main window
         self.root = tk.Tk()
@@ -453,6 +454,9 @@ class MainGUI:
                 # Translate
                 translation = self.translator.translate(combined_text)
                 print(f"✓ Translation: '{translation}'")
+                
+                # Store translated text for TTS
+                self.last_translated_text = translation if translation else ""
 
                 # Update display
                 if self.display:
@@ -469,10 +473,20 @@ class MainGUI:
             traceback.print_exc()
 
     def _do_tts_speak(self):
-        """Speak the last OCR'd text (triggered by hotkey)."""
+        """Speak the last OCR'd text in source language (triggered by hotkey)."""
         if self.last_ocr_text and self.tts_engine:
-            print(f"🔊 Speaking: {self.last_ocr_text}")
+            # Ensure TTS is set to source language
+            self.tts_engine.set_language(self.config.source_language)
+            print(f"🔊 Speaking original text: {self.last_ocr_text}")
             self.tts_engine.speak(self.last_ocr_text, blocking=False)
+
+    def _do_translated_tts_speak(self):
+        """Speak the last translated text in target language (triggered by hotkey)."""
+        if self.last_translated_text and self.tts_engine:
+            # Set TTS to target language for translated text
+            self.tts_engine.set_language(self.config.target_language)
+            print(f"🔊 Speaking translation: {self.last_translated_text}")
+            self.tts_engine.speak(self.last_translated_text, blocking=False)
 
     def start_monitoring(self):
         """Start monitoring and translation."""
@@ -528,18 +542,23 @@ class MainGUI:
         print(f"🔧 Starting in mode: {'HOTKEY' if self.config.hotkey_mode else 'CONTINUOUS'}")
         print(f"   Translate key: {self.config.translate_hotkey}")
         print(f"   TTS key: {self.config.tts_hotkey}")
+        print(f"   Translated TTS key: {self.config.translated_tts_hotkey}")
         print(f"   Translate gamepad: {self.config.translate_gamepad}")
         print(f"   TTS gamepad: {self.config.tts_gamepad}")
+        print(f"   Translated TTS gamepad: {self.config.translated_tts_gamepad}")
 
         if self.config.hotkey_mode:
             # Hotkey mode: Start global hotkey manager (keyboard + gamepad)
             self.hotkey_manager = HotkeyManager(
                 translate_callback=self._do_manual_translation,
                 tts_callback=self._do_tts_speak,
+                translated_tts_callback=self._do_translated_tts_speak,
                 translate_key=self.config.translate_hotkey,
                 tts_key=self.config.tts_hotkey,
+                translated_tts_key=self.config.translated_tts_hotkey,
                 translate_gamepad=self.config.translate_gamepad,
-                tts_gamepad=self.config.tts_gamepad
+                tts_gamepad=self.config.tts_gamepad,
+                translated_tts_gamepad=self.config.translated_tts_gamepad
             )
             self.hotkey_manager.start()
             print("✓ Hotkey manager started (global keyboard + gamepad)")

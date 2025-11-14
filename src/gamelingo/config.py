@@ -32,8 +32,10 @@ class Config:
     hotkey_mode: bool = False  # If True, use hotkeys instead of continuous monitoring
     translate_hotkey: str = "<65>"  # Default: Keypad 0 (key code)
     tts_hotkey: str = "<110>"  # Default: Keypad . (key code)
+    translated_tts_hotkey: str = "<107>"  # Default: Keypad + (key code)
     translate_gamepad: int = 0  # Default: Button 0 (A/Cross)
     tts_gamepad: int = 1  # Default: Button 1 (B/Circle)
+    translated_tts_gamepad: int = 2  # Default: Button 2 (X/Square)
 
     # OCR settings
     ocr_engine: str = "tesseract"  # "tesseract" or "easyocr"

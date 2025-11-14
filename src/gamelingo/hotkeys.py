@@ -14,25 +14,33 @@ class HotkeyManager:
         self,
         translate_callback: Callable,
         tts_callback: Callable,
+        translated_tts_callback: Callable,
         translate_key: str = "<65>",  # Keypad 0
         tts_key: str = "<110>",  # Keypad .
+        translated_tts_key: str = "<107>",  # Keypad +
         translate_gamepad: int = 0,  # Button 0 (A/Cross)
-        tts_gamepad: int = 1  # Button 1 (B/Circle)
+        tts_gamepad: int = 1,  # Button 1 (B/Circle)
+        translated_tts_gamepad: int = 2  # Button 2 (X/Square)
     ):
         """Initialize hotkey manager.
 
         Args:
             translate_callback: Function to call when translate hotkey is pressed.
             tts_callback: Function to call when TTS hotkey is pressed.
+            translated_tts_callback: Function to call when translated TTS hotkey is pressed.
             translate_key: Key code for translation (format: "<keycode>")
             tts_key: Key code for TTS (format: "<keycode>")
+            translated_tts_key: Key code for translated TTS (format: "<keycode>")
             translate_gamepad: Gamepad button index for translation
             tts_gamepad: Gamepad button index for TTS
+            translated_tts_gamepad: Gamepad button index for translated TTS
         """
         self.translate_callback = translate_callback
         self.tts_callback = tts_callback
+        self.translated_tts_callback = translated_tts_callback
         self.translate_key = translate_key
         self.tts_key = tts_key
+        self.translated_tts_key = translated_tts_key
 
         self.running = False
         self.keyboard_listener: Optional[keyboard.Listener] = None
@@ -41,13 +49,16 @@ class HotkeyManager:
         self.gamepad_manager = GamepadManager(
             translate_callback=translate_callback,
             tts_callback=tts_callback,
+            translated_tts_callback=translated_tts_callback,
             translate_button=translate_gamepad,
-            tts_button=tts_gamepad
+            tts_button=tts_gamepad,
+            translated_tts_button=translated_tts_gamepad
         )
 
         # Track button states to prevent repeats
         self.last_translate_time = 0
         self.last_tts_time = 0
+        self.last_translated_tts_time = 0
         self.debounce_time = 0.3  # 300ms debounce
 
     def start(self):
@@ -95,7 +106,7 @@ class HotkeyManager:
             elif hasattr(key, 'char') and key.char:
                 key_code = key.char
 
-            print(f"⌨️  Key pressed: {key_code} (looking for translate={self.translate_key}, tts={self.tts_key})")
+            print(f"⌨️  Key pressed: {key_code} (looking for translate={self.translate_key}, tts={self.tts_key}, translated_tts={self.translated_tts_key})")
 
             # Check against configured hotkeys
             if key_code == self.translate_key:
@@ -111,6 +122,13 @@ class HotkeyManager:
                     self.last_tts_time = current_time
                     print(f"⌨️  TTS triggered by {key_code}")
                     self.tts_callback()
+
+            elif key_code == self.translated_tts_key:
+                current_time = time.time()
+                if current_time - self.last_translated_tts_time > self.debounce_time:
+                    self.last_translated_tts_time = current_time
+                    print(f"⌨️  Translated TTS triggered by {key_code}")
+                    self.translated_tts_callback()
 
         except Exception as e:
             print(f"Hotkey error: {e}")

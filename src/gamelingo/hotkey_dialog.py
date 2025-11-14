@@ -31,7 +31,7 @@ class HotkeyConfigDialog:
         # Create dialog window
         self.dialog = tk.Toplevel(parent)
         self.dialog.title("Configure Hotkeys")
-        self.dialog.geometry("550x420")
+        self.dialog.geometry("550x520")
         self.dialog.resizable(False, False)
         self.dialog.transient(parent)
         self.dialog.grab_set()
@@ -44,8 +44,10 @@ class HotkeyConfigDialog:
         # Temporary hotkey storage
         self.temp_translate_key = self.config.translate_hotkey
         self.temp_tts_key = self.config.tts_hotkey
+        self.temp_translated_tts_key = self.config.translated_tts_hotkey
         self.temp_translate_gamepad = self.config.translate_gamepad
         self.temp_tts_gamepad = self.config.tts_gamepad
+        self.temp_translated_tts_gamepad = self.config.translated_tts_gamepad
 
         # Initialize pygame joystick ONCE and reuse it
         self.joystick = None
@@ -123,7 +125,7 @@ class HotkeyConfigDialog:
         ).grid(row=0, column=2, padx=5, pady=5)
 
         # TTS key
-        tk.Label(kbd_frame, text="Speak (TTS):").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+        tk.Label(kbd_frame, text="Speak Original:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.tts_key_label = tk.Label(
             kbd_frame,
             text=self._format_key(self.temp_tts_key),
@@ -137,6 +139,22 @@ class HotkeyConfigDialog:
             text="Set",
             command=lambda: self._listen_for_key("tts")
         ).grid(row=1, column=2, padx=5, pady=5)
+
+        # Translated TTS key
+        tk.Label(kbd_frame, text="Speak Translation:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        self.translated_tts_key_label = tk.Label(
+            kbd_frame,
+            text=self._format_key(self.temp_translated_tts_key),
+            bg="white",
+            width=20,
+            relief=tk.SUNKEN
+        )
+        self.translated_tts_key_label.grid(row=2, column=1, padx=5, pady=5)
+        ttk.Button(
+            kbd_frame,
+            text="Set",
+            command=lambda: self._listen_for_key("translated_tts")
+        ).grid(row=2, column=2, padx=5, pady=5)
 
         # Gamepad section
         gp_frame = ttk.LabelFrame(self.dialog, text="Gamepad Buttons", padding=10)
@@ -159,7 +177,7 @@ class HotkeyConfigDialog:
         ).grid(row=0, column=2, padx=5, pady=5)
 
         # TTS button
-        tk.Label(gp_frame, text="Speak (TTS):").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+        tk.Label(gp_frame, text="Speak Original:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.tts_gp_label = tk.Label(
             gp_frame,
             text=self._format_gamepad(self.temp_tts_gamepad),
@@ -173,6 +191,22 @@ class HotkeyConfigDialog:
             text="Set",
             command=lambda: self._listen_for_gamepad("tts")
         ).grid(row=1, column=2, padx=5, pady=5)
+
+        # Translated TTS button
+        tk.Label(gp_frame, text="Speak Translation:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        self.translated_tts_gp_label = tk.Label(
+            gp_frame,
+            text=self._format_gamepad(self.temp_translated_tts_gamepad),
+            bg="white",
+            width=20,
+            relief=tk.SUNKEN
+        )
+        self.translated_tts_gp_label.grid(row=2, column=1, padx=5, pady=5)
+        ttk.Button(
+            gp_frame,
+            text="Set",
+            command=lambda: self._listen_for_gamepad("translated_tts")
+        ).grid(row=2, column=2, padx=5, pady=5)
 
         # Buttons
         button_frame = ttk.Frame(self.dialog)
@@ -198,6 +232,7 @@ class HotkeyConfigDialog:
         key_names = {
             "<65>": "Numpad 0",
             "<110>": "Numpad .",
+            "<107>": "Numpad +",
             "<96>": "Numpad 0 (Alt)",
             "<97>": "Numpad 1",
             "<98>": "Numpad 2",
@@ -231,13 +266,18 @@ class HotkeyConfigDialog:
         """Listen for keyboard key press.
 
         Args:
-            action: "translate" or "tts"
+            action: "translate", "tts", or "translated_tts"
         """
         if self.listening:
             return
 
         # Update label
-        label = self.translate_key_label if action == "translate" else self.tts_key_label
+        if action == "translate":
+            label = self.translate_key_label
+        elif action == "tts":
+            label = self.tts_key_label
+        else:  # translated_tts
+            label = self.translated_tts_key_label
         label.config(text="Press a key...", bg="yellow")
 
         def on_press(key):
@@ -257,9 +297,15 @@ class HotkeyConfigDialog:
                         text=self._format_key(key_code),
                         bg="white"
                     )
-                else:
+                elif action == "tts":
                     self.temp_tts_key = key_code
                     self.tts_key_label.config(
+                        text=self._format_key(key_code),
+                        bg="white"
+                    )
+                else:  # translated_tts
+                    self.temp_translated_tts_key = key_code
+                    self.translated_tts_key_label.config(
                         text=self._format_key(key_code),
                         bg="white"
                     )
@@ -279,13 +325,18 @@ class HotkeyConfigDialog:
         """Listen for gamepad button press.
 
         Args:
-            action: "translate" or "tts"
+            action: "translate", "tts", or "translated_tts"
         """
         if self.listening:
             return
 
         # Update label
-        label = self.translate_gp_label if action == "translate" else self.tts_gp_label
+        if action == "translate":
+            label = self.translate_gp_label
+        elif action == "tts":
+            label = self.tts_gp_label
+        else:  # translated_tts
+            label = self.translated_tts_gp_label
         label.config(text="Detecting gamepad...", bg="yellow")
 
         def gamepad_listen():
@@ -294,9 +345,13 @@ class HotkeyConfigDialog:
                 if not PYGAME_AVAILABLE or not self.joystick:
                     label.config(text="No gamepad detected", bg="red")
                     time.sleep(2)
-                    label.config(text=self._format_gamepad(
-                        self.temp_translate_gamepad if action == "translate" else self.temp_tts_gamepad
-                    ), bg="white")
+                    if action == "translate":
+                        temp_button = self.temp_translate_gamepad
+                    elif action == "tts":
+                        temp_button = self.temp_tts_gamepad
+                    else:  # translated_tts
+                        temp_button = self.temp_translated_tts_gamepad
+                    label.config(text=self._format_gamepad(temp_button), bg="white")
                     self.listening = False
                     return
 
@@ -323,9 +378,15 @@ class HotkeyConfigDialog:
                                     text=self._format_gamepad(button_index),
                                     bg="white"
                                 )
-                            else:
+                            elif action == "tts":
                                 self.temp_tts_gamepad = button_index
                                 self.tts_gp_label.config(
+                                    text=self._format_gamepad(button_index),
+                                    bg="white"
+                                )
+                            else:  # translated_tts
+                                self.temp_translated_tts_gamepad = button_index
+                                self.translated_tts_gp_label.config(
                                     text=self._format_gamepad(button_index),
                                     bg="white"
                                 )
@@ -339,9 +400,13 @@ class HotkeyConfigDialog:
                 if self.listening:
                     label.config(text="Timeout - no button pressed", bg="orange")
                     time.sleep(1)
-                    label.config(text=self._format_gamepad(
-                        self.temp_translate_gamepad if action == "translate" else self.temp_tts_gamepad
-                    ), bg="white")
+                    if action == "translate":
+                        temp_button = self.temp_translate_gamepad
+                    elif action == "tts":
+                        temp_button = self.temp_tts_gamepad
+                    else:  # translated_tts
+                        temp_button = self.temp_translated_tts_gamepad
+                    label.config(text=self._format_gamepad(temp_button), bg="white")
 
             except Exception as e:
                 print(f"❌ Gamepad listen error: {e}")
@@ -349,9 +414,13 @@ class HotkeyConfigDialog:
                 traceback.print_exc()
                 label.config(text="Error - see console", bg="red")
                 time.sleep(2)
-                label.config(text=self._format_gamepad(
-                    self.temp_translate_gamepad if action == "translate" else self.temp_tts_gamepad
-                ), bg="white")
+                if action == "translate":
+                    temp_button = self.temp_translate_gamepad
+                elif action == "tts":
+                    temp_button = self.temp_tts_gamepad
+                else:  # translated_tts
+                    temp_button = self.temp_translated_tts_gamepad
+                label.config(text=self._format_gamepad(temp_button), bg="white")
             finally:
                 self.listening = False
 
@@ -363,8 +432,10 @@ class HotkeyConfigDialog:
         """Save hotkey configuration."""
         self.config.translate_hotkey = self.temp_translate_key
         self.config.tts_hotkey = self.temp_tts_key
+        self.config.translated_tts_hotkey = self.temp_translated_tts_key
         self.config.translate_gamepad = self.temp_translate_gamepad
         self.config.tts_gamepad = self.temp_tts_gamepad
+        self.config.translated_tts_gamepad = self.temp_translated_tts_gamepad
         self.config_manager.save()
 
         messagebox.showinfo(
