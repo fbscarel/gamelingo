@@ -1,4 +1,4 @@
-"""Utility functions for Screen Translate."""
+"""Utility functions for GameLingo."""
 
 import hashlib
 from typing import Optional

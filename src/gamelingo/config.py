@@ -1,4 +1,4 @@
-"""Configuration management for Screen Translate."""
+"""Configuration management for GameLingo."""
 
 import json
 from pathlib import Path

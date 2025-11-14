@@ -82,7 +82,7 @@ sudo pacman -S tesseract
 sudo pacman -S tesseract-data-ita  # Italian
 ```
 
-### 3. Install Screen Translate
+### 3. Install GameLingo
 
 ```bash
 cd gamelingo

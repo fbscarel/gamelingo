@@ -1,4 +1,4 @@
-"""GUI components for Screen Translate."""
+"""GUI components for GameLingo."""
 
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -147,7 +147,7 @@ class MainGUI:
         
         # Create main window
         self.root = tk.Tk()
-        self.root.title("Screen Translate")
+        self.root.title("GameLingo")
         self.root.geometry("550x480")
         self.root.resizable(False, False)
         
@@ -162,7 +162,7 @@ class MainGUI:
         # Title
         title_label = tk.Label(
             self.root,
-            text="Screen Translate",
+            text="GameLingo",
             font=("Arial", 18, "bold")
         )
         title_label.pack(pady=10)

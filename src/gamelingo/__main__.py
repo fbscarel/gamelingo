@@ -1,4 +1,4 @@
-"""Main entry point for Screen Translate."""
+"""Main entry point for GameLingo."""
 
 import sys
 import argparse
@@ -8,7 +8,7 @@ from .gui import MainGUI
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Screen Translate - Real-time OCR and translation for games"
+        description="GameLingo - Real-time OCR and translation for games"
     )
     
     parser.add_argument(
@@ -21,7 +21,7 @@ def main():
     
     if args.version:
         from . import __version__
-        print(f"Screen Translate v{__version__}")
+        print(f"GameLingo v{__version__}")
         sys.exit(0)
     
     # Run the GUI
